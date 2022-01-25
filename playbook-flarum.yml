@@ -13,6 +13,12 @@
   #################################
   ## create directories
   #################################
+  - name: create directory flarum
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      state: directory
   - name: create directory etc
     become: yes
     become_user: "{{pac}}-{{user}}"
@@ -31,27 +37,36 @@
     file:
       path: "/home/pacs/{{pac}}/users/{{user}}/var/log"
       state: directory
-  - name: create directory var/run
-    become: yes
-    become_user: "{{pac}}-{{user}}"
-    file:
-      path: "/home/pacs/{{pac}}/users/{{user}}/var/run"
-      state: directory
 
   #################################
   ## install requirements
   #################################
-  - name: Install node.js
-    import_tasks: tasks/hs_nodejs.yml
-
-  - name: Install ruby
-    import_tasks: tasks/hs_ruby.yml
+  - name: Install composer
+    import_tasks: tasks/hs_composer.yml
 
   ##################################
   ## install flarum
   ##################################
 
-  # TODO
+  - name: install flarum
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php ~/composer/composer.phar create-project flarum/flarum .
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/flarum/public"
+
+  - name: install german language pack
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php ~/composer/composer.phar require flarum-lang/german
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/flarum/vendor/flarum-lang/german"
 
   ##################################
   ## configuration
@@ -68,11 +83,16 @@
   ########################
   ## setup the apache site
   ########################
-
-  # TODO
-
-  ####################################
-  ## install cron jobs
-  ####################################
-
-  # TODO
+  - name: drop htdocs-ssl
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+       path: "/home/pacs/{{pac}}/users/{{user}}/doms/{{domain}}/htdocs-ssl"
+       state: absent
+  - name: create symbolic link for htdocs-ssl
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      src: "/home/pacs/{{pac}}/users/{{user}}/flarum/public"
+      dest: "/home/pacs/{{pac}}/users/{{user}}/doms/{{domain}}/htdocs-ssl"
+      state: link

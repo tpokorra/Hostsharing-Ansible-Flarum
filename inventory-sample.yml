@@ -7,8 +7,3 @@ flarum:
       domain: discuss.example.org
       user: flarum
       password: testpassw0rd_changeme
-      redispassword: testpassw0rd_changeme
-
-      redisport: 11111
-      pumaport: 32003
-      streamport: 32004
