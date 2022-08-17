@@ -8,5 +8,9 @@ flarum:
       user: flarum
       password: testpassw0rd_changeme
 
+      admin_user: AdminFlarum
+      admin_email: admin@example.org
+      admin_password: TopSecret
+
       # see https://getcomposer.org/download/
       composer_version: 2.3.10

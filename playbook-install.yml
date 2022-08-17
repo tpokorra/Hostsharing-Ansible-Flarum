@@ -71,14 +71,26 @@
   ##################################
   ## configuration
   ##################################
-
-  # TODO
+  - name: upload configuration file
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template:
+      src: "templates/config.yml"
+      dest: "/home/pacs/{{pac}}/users/{{user}}/flarum/config.yml"
 
   ######################
   ## initialise instance
   ######################
-
-  # TODO
+  - name: initialise instance
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php flarum install --file=config.yml || exit -1
+      touch "/home/pacs/{{pac}}/users/{{user}}/.ansible_instance_initialised"
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible_instance_initialised"
 
   ########################
   ## setup the apache site
