@@ -1,7 +1,7 @@
 Hostsharing-Ansible-Flarum
 ==========================
 
-This Ansible playbook will install the latest Flarum release on a server from www.hostsharing.net.
+This Ansible playbook will install the latest [Flarum](https://flarum.org/) release on a server from www.hostsharing.net.
 
 To use these modules we have to create a file named ".hsadmin.properties" in the home directory of the package admins. Into that file we have to insert the packagename and password of the package admin. 
 
@@ -29,7 +29,7 @@ All needed parameters can be set in the inventory file now. Change xyz00 to the 
     
 The option -i can be used to read this inventory file instead of the /etc/ansible/hosts file. We want to login with an SSH-Key. We run:
 
-    $ ansible-playbook -i inventory.yml playbook-flarum.yml
+    $ ansible-playbook -i inventory.yml playbook-install.yml
 
 Now we can reach our site via:
 
