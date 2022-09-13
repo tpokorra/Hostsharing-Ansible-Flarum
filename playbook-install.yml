@@ -167,6 +167,16 @@
       chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
       creates: "/home/pacs/{{pac}}/users/{{user}}/flarum/vendor/fof/upload"
 
+  - name: install extension fof/spamblock
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php ~/composer/composer.phar require fof/spamblock || exit -1
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/flarum/vendor/fof/spamblock"
+
   - name: clean up composer cache
     become: yes
     become_user: "{{pac}}-{{user}}"
