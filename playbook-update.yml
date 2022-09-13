@@ -1,0 +1,31 @@
+---
+- hosts: flarum
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    # see https://docs.ansible.com/ansible/latest/user_guide/become.html#risks-of-becoming-an-unprivileged-user
+    ansible_common_remote_group: "{{pac}}"
+    ansible_remote_tmp: ~/.ansible/tmp
+
+  tasks:
+
+  #################################
+  ## update flarum
+  #################################
+
+  - name: update flarum
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php ~/composer/composer.phar --no-interaction update --prefer-dist --no-dev -a --with-all-dependencies || exit -1
+      php flarum migrate || exit -1
+      php flarum cache:clear || exit -1
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+
+  - name: clear cache composer
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/.cache/composer"
+      state: absent
