@@ -114,6 +114,66 @@
       chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
       creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible_smtp_initialised"
 
+  ########################################
+  ## install a couple of useful extensions
+  ########################################
+  - name: install extension flarum-lang/german
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php ~/composer/composer.phar require flarum-lang/german || exit -1
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/flarum/vendor/flarum-lang/german"
+
+  - name: install extension clarkwinkelmann/flarum-ext-first-post-approval
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php ~/composer/composer.phar require clarkwinkelmann/flarum-ext-first-post-approval || exit -1
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/flarum/vendor/clarkwinkelmann/flarum-ext-first-post-approval"
+
+  - name: install extension tpokorra/flarum-ext-post-notification
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php ~/composer/composer.phar require tpokorra/flarum-ext-post-notification || exit -1
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/flarum/vendor/tpokorra/flarum-ext-post-notification"
+
+  - name: install extension fof/split
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php ~/composer/composer.phar require fof/split || exit -1
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/flarum/vendor/fof/split"
+
+  - name: install extension fof/upload
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      php ~/composer/composer.phar require fof/upload || exit -1
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/flarum/vendor/fof/upload"
+
+  - name: clean up composer cache
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/.cache/composer"
+      state: absent
+
   ########################
   ## setup the apache site
   ########################
