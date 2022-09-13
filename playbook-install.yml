@@ -78,6 +78,11 @@
       src: "templates/config.yml"
       dest: "/home/pacs/{{pac}}/users/{{user}}/flarum/config.yml"
 
+  - name: upload mysql configuration file
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/.my.cnf" src="templates/my.cnf" mode=0600
+
   ######################
   ## initialise instance
   ######################
@@ -91,6 +96,23 @@
       executable: /bin/bash
       chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
       creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible_instance_initialised"
+
+  - name: configure smtp
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      echo 'INSERT INTO `fl_settings` (`key`, `value`) VALUES("mail_driver", "smtp") ON DUPLICATE KEY UPDATE `value`="smtp"' | mysql || exit -1
+      echo 'INSERT INTO `fl_settings` (`key`, `value`) VALUES("mail_encryption", "ssl") ON DUPLICATE KEY UPDATE `value`="ssl"' | mysql || exit -1
+      echo 'INSERT INTO `fl_settings` (`key`, `value`) VALUES("mail_from", "noreply@{{domain}}") ON DUPLICATE KEY UPDATE `value`="noreply@{{domain}}"' | mysql || exit -1
+      echo 'INSERT INTO `fl_settings` (`key`, `value`) VALUES("mail_host", "{{pac}}.hostsharing.net") ON DUPLICATE KEY UPDATE `value`="{{pac}}.hostsharing.net"' | mysql || exit -1
+      echo 'INSERT INTO `fl_settings` (`key`, `value`) VALUES("mail_password", "{{password}}") ON DUPLICATE KEY UPDATE `value`="{{password}}"' | mysql || exit -1
+      echo 'INSERT INTO `fl_settings` (`key`, `value`) VALUES("mail_port", "465") ON DUPLICATE KEY UPDATE `value`="465"' | mysql || exit -1
+      echo 'INSERT INTO `fl_settings` (`key`, `value`) VALUES("mail_username", "{{pac}}-{{user}}") ON DUPLICATE KEY UPDATE `value`="{{pac}}-{{user}}"' | mysql || exit -1
+      touch "/home/pacs/{{pac}}/users/{{user}}/.ansible_smtp_initialised"
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/flarum"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible_smtp_initialised"
 
   ########################
   ## setup the apache site
